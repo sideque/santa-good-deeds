@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "../style.css";
-
+import Dashboard from "./Dashboard";
 const DEEDS = [
   { id: 1, label: "Helped someone", type: "help" },
   { id: 2, label: "Studied well", type: "study" },
@@ -33,6 +33,7 @@ const Deeds = ({ onAddDeed }) => {
   };
 
   return (
+    
     <section className="deeds-container">
       <h1 className="deeds-title">🎅 Log Today’s Good Deeds</h1>
 
@@ -53,6 +54,53 @@ const Deeds = ({ onAddDeed }) => {
             <span>{deed.label}</span>
           </div>
         ))}
+
+        <aside className="sidebar">
+          <nav className="sidebar-nav" aria-label="Main navigation">
+            <ul className="sidebar-menu">
+              <li className="menu-item">
+                <button
+                  className={`menu-link ${activePage === 'dashboard' ? 'active' : ''}`}
+                  id="dashboard"
+                  onClick={() => setActivePage('dashboard')}
+                  aria-current={activePage === 'dashboard' ? 'page' : undefined}
+                >
+                  🎁 Dashboard
+                </button>
+              </li>
+              <li className="menu-item">
+                <button
+                  className={`menu-link ${activePage === 'deeds' ? 'active' : ''}`}
+                  id="deeds"
+                  onClick={() => setActivePage('deeds')}
+                  aria-current={activePage === 'deeds' ? 'page' : undefined}
+                >
+                  ⭐ Deeds
+                </button>
+              </li>
+              <li className="menu-item">
+                <button
+                  className={`menu-link ${activePage === 'analytics' ? 'active' : ''}`}
+                  id="analytics"
+                  onClick={() => setActivePage('analytics')}
+                  aria-current={activePage === 'analytics' ? 'page' : undefined}
+                >
+                  📊 Analytics
+                </button>
+              </li>
+              <li className="menu-item">
+                <button
+                  className={`menu-link ${activePage === 'profile' ? 'active' : ''}`}
+                  id="profile"
+                  onClick={() => setActivePage('profile')}
+                  aria-current={activePage === 'profile' ? 'page' : undefined}
+                >
+                  👤 Profile
+                </button>
+              </li>
+            </ul>
+          </nav>
+        </aside>
       </div>
 
       <button

@@ -17,7 +17,7 @@ const Analytics = ({ analytics }) => {
   return (
     <section className="analytics-container">
       <h1 className="analytics-title">📊 Santa Analytics</h1>
-
+      <Charts data={analytics.dailyBreakdown} />
       {/* ===== SUMMARY CARDS ===== */}
       <div className="analytics-cards">
         <div className="card">

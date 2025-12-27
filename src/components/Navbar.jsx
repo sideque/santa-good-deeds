@@ -11,9 +11,9 @@ const Navbar = ({ activePage, setActivePage }) => {
 
   return (
     <header className="navbar">
-      <div className="navbar-brand">
+      {/* <div style={{marginLeft:"100px"}}>
         🎅 <span>SantaVerse</span>
-      </div>
+      </div> */}
 
       <nav className="navbar-menu">
         {menuItems.map((item) => (
