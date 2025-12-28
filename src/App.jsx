@@ -18,31 +18,15 @@ import Snowfall from "react-snowfall";
 
 function App() {
   /* ===== GLOBAL STATE ===== */
+  const [deeds, setDeeds] = useState([]);
   const [selectedDeeds, setSelectedDeeds] = useState([]);
-  const [deeds, setDeeds] = useState([]);  
   const [score, setScore] = useState(0);
   const [analytics, setAnalytics] = useState(null);
   const [activePage, setActivePage] = useState("dashboard");
 
-  /* ===== STREAK STATE (TEMP – CAN IMPROVE LATER) ===== */
+  /* ===== STREAK STATE ===== */
   const currentStreak = deeds.length > 0 ? 7 : 0;
   const bestStreak = 14;
-
-  const addDeed = () => {
-  const newDeed = {
-    id: Date.now(),
-    type: "New Good Deed",
-    emoji: "✨",
-    points: 5,
-  };
-
-  const deleteDeed = (id) => {
-  setDeeds((prev) => prev.filter((deed) => deed.id !== id));
-};
-
-
-  setDeeds((prev) => [...prev, newDeed]);
-};
 
   /* ===== LOAD DATA ===== */
   useEffect(() => {
@@ -58,14 +42,51 @@ function App() {
     saveData({ deeds, score });
   }, [deeds, score]);
 
-  /* ===== ADD DEED HANDLER ===== */
-  const handleAddDeed = (deed) => {
-    const updatedDeeds = [...deeds, deed];
-    const newScore = calculateScore(updatedDeeds);
+  /* ===== ADD DEED ===== */
+  const addDeed = () => {
+    const newDeed = {
+      id: crypto.randomUUID(),
+      type: "New Good Deed",
+      emoji: "✨",
+      points: 5,
+    };
 
-    setDeeds(updatedDeeds);
-    setScore(newScore);
+    const updated = [...deeds, newDeed];
+    setDeeds(updated);
+    setScore(calculateScore(updated));
   };
+
+  /* ===== EDIT DEED ===== */
+  const editDeed = (id) => {
+    const newName = prompt("Edit deed name");
+    if (!newName) return;
+
+    const updated = deeds.map((deed) =>
+      deed.id === id ? { ...deed, type: newName } : deed
+    );
+
+    setDeeds(updated);
+    setScore(calculateScore(updated));
+  };
+
+  /* ===== DELETE DEED ===== */
+  const deleteDeed = (id) => {
+    const updated = deeds.filter((deed) => deed.id !== id);
+    setDeeds(updated);
+    setScore(calculateScore(updated));
+  };
+
+  /* ===== SUBMIT SELECTED DEEDS ===== */
+  const handleSubmit = () => {
+  // selectedDeeds.forEach((id) => {
+  //   const deed = deeds.find((d) => d.id === id);
+  //   if (deed) {
+  //     setDeeds((prev) => [...prev, deed]); // ❌ duplicate add
+  //   }
+  // });
+
+  setSelectedDeeds([]);
+};
 
   const santaMessage = getSantaMessage(score);
 
@@ -76,6 +97,7 @@ function App() {
         return (
           <Dashboard
             score={score}
+            deeds={deeds} 
             currentStreak={currentStreak}
             bestStreak={bestStreak}
             message={santaMessage}
@@ -87,43 +109,37 @@ function App() {
 
       case "deeds":
         return (
-    <Deeds
-      deeds={deeds}
-      addDeed={addDeed}
-      deleteDeed={deleteDeed}
-      selectedDeeds={selectedDeeds}
-      setSelectedDeeds={setSelectedDeeds}
-      onSubmit={() => {
-        selectedDeeds.forEach((id) => {
-          const deed = deeds.find((d) => d.id === id);
-          if (deed) handleAddDeed(deed);
-        });
-        setSelectedDeeds([]);
-      }}
-      activePage={activePage}
-      setActivePage={setActivePage}
-    />
-  );
+          <Deeds
+            deeds={deeds}
+            selectedDeeds={selectedDeeds}
+            setSelectedDeeds={setSelectedDeeds}
+            onSubmit={handleSubmit}
+            activePage={activePage}
+            setActivePage={setActivePage}
+            addDeed={addDeed}
+            editDeed={editDeed}
+            deleteDeed={deleteDeed}
+          />
+        );
 
       case "analytics":
         return (
-    <Analytics
-      analytics={analytics}
-      activePage={activePage}
-      setActivePage={setActivePage}
-    />
-  );
+          <Analytics
+            analytics={analytics}
+            activePage={activePage}
+            setActivePage={setActivePage}
+          />
+        );
 
       case "profile":
-  return (
-    <Profile
-      score={score}
-      deeds={deeds}
-      activePage={activePage}
-      setActivePage={setActivePage}
-    />
-  );
-
+        return (
+          <Profile
+            score={score}
+            deeds={deeds}
+            activePage={activePage}
+            setActivePage={setActivePage}
+          />
+        );
 
       default:
         return null;
@@ -132,8 +148,6 @@ function App() {
 
   return (
     <div className="app-container">
-      {/* <Navbar activePage={activePage} setActivePage={setActivePage} /> */}
-
       <main className="main-content">{renderPage()}</main>
 
       {/* ❄️ Snow Effect */}
@@ -157,4 +171,3 @@ function App() {
 }
 
 export default App;
-

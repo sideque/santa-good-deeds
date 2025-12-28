@@ -1,13 +1,40 @@
 import React from "react";
 import "../style.css";
 
-const Deeds = ({ deeds, selectedDeeds, setSelectedDeeds, onSubmit, activePage, setActivePage }) => {
+const Deeds = ({
+  deeds,
+  selectedDeeds,
+  setSelectedDeeds,
+  onSubmit,
+  activePage,
+  setActivePage,
+  addDeed,
+  editDeed,
+  deleteDeed
+}) => {
+
   const handleToggle = (deedId) => {
     setSelectedDeeds((prev) =>
       prev.includes(deedId)
         ? prev.filter((id) => id !== deedId)
         : [...prev, deedId]
     );
+  };
+
+  // Prevent event bubbling for action buttons
+  const handleEdit = (e, deedId) => {
+    e.stopPropagation();
+    editDeed(deedId);
+  };
+
+  const handleDelete = (e, deedId) => {
+    e.stopPropagation();
+    deleteDeed(deedId);
+  };
+
+  const handleAdd = (e) => {
+    e.stopPropagation();
+    addDeed();
   };
 
   return (
@@ -80,17 +107,30 @@ const Deeds = ({ deeds, selectedDeeds, setSelectedDeeds, onSubmit, activePage, s
               Choose the acts of kindness you've done today and spread some Christmas magic! ✨
             </p>
 
+            {/* ADD BUTTON */}
+            <div className="add-deed-container">
+              <button onClick={handleAdd} className="btn-add">
+                <span className="add-icon">➕</span>
+                <span className="add-text">Add New Deed</span>
+                <span className="add-shine"></span>
+              </button>
+            </div>
+
             {/* Deeds Grid */}
             <div className="deeds-list">
               {deeds.map((deed, index) => (
                 <article
                   key={deed.id}
                   className={`deed-card ${selectedDeeds.includes(deed.id) ? "active" : ""}`}
-                  onClick={() => handleToggle(deed.id)}
                   style={{ animationDelay: `${0.3 + index * 0.05}s` }}
                 >
                   <div className="deed-card-glow"></div>
-                  <div className="deed-card-content">
+                  
+                  {/* Main clickable area for selection */}
+                  <div
+                    className="deed-card-content"
+                    onClick={() => handleToggle(deed.id)}
+                  >
                     <div className="deed-icon-container">
                       <span className="deed-emoji">{deed.emoji}</span>
                       {selectedDeeds.includes(deed.id) && (
@@ -99,6 +139,26 @@ const Deeds = ({ deeds, selectedDeeds, setSelectedDeeds, onSubmit, activePage, s
                     </div>
                     <h3 className="deed-name">{deed.type}</h3>
                     <p className="deed-points">+{deed.points} pts</p>
+                  </div>
+
+                  {/* ACTION BUTTONS - Separate from selection area */}
+                  <div className="deed-actions">
+                    <button 
+                      className="deed-action-btn edit-btn"
+                      onClick={(e) => handleEdit(e, deed.id)}
+                      title="Edit deed"
+                      aria-label="Edit deed"
+                    >
+                      <span>✏️</span>
+                    </button>
+                    <button 
+                      className="deed-action-btn delete-btn"
+                      onClick={(e) => handleDelete(e, deed.id)}
+                      title="Delete deed"
+                      aria-label="Delete deed"
+                    >
+                      <span>🗑️</span>
+                    </button>
                   </div>
                 </article>
               ))}
@@ -117,10 +177,6 @@ const Deeds = ({ deeds, selectedDeeds, setSelectedDeeds, onSubmit, activePage, s
                 </span>
                 <span className="submit-shine"></span>
               </button>
-
-              <button onClick={addDeed} className="btn-add">
-  ➕ Add Deed
-</button>
               
               {selectedDeeds.length > 0 && (
                 <p className="submit-hint">
