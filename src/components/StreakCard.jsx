@@ -2,8 +2,9 @@ import React from "react";
 import "../style.css";
 
 /**
- * StreakCard
- * Shows current streak, best streak, and motivational message.
+ * StreakCard - Luxury Edition
+ * Shows current streak, best streak, and motivational message
+ * with enhanced visual design
  *
  * Props:
  * - currentStreak: number

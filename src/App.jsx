@@ -14,12 +14,12 @@ import { getSantaMessage } from "./controllers/ProgressController";
 import { loadData, saveData } from "./services/storageService";
 
 /* ===== COMPONENTS ===== */
-import Navbar from "./components/Navbar";
 import Snowfall from "react-snowfall";
 
 function App() {
   /* ===== GLOBAL STATE ===== */
-  const [deeds, setDeeds] = useState([]);
+  const [selectedDeeds, setSelectedDeeds] = useState([]);
+  const [deeds, setDeeds] = useState([]);  
   const [score, setScore] = useState(0);
   const [analytics, setAnalytics] = useState(null);
   const [activePage, setActivePage] = useState("dashboard");
@@ -27,6 +27,22 @@ function App() {
   /* ===== STREAK STATE (TEMP – CAN IMPROVE LATER) ===== */
   const currentStreak = deeds.length > 0 ? 7 : 0;
   const bestStreak = 14;
+
+  const addDeed = () => {
+  const newDeed = {
+    id: Date.now(),
+    type: "New Good Deed",
+    emoji: "✨",
+    points: 5,
+  };
+
+  const deleteDeed = (id) => {
+  setDeeds((prev) => prev.filter((deed) => deed.id !== id));
+};
+
+
+  setDeeds((prev) => [...prev, newDeed]);
+};
 
   /* ===== LOAD DATA ===== */
   useEffect(() => {
@@ -70,13 +86,44 @@ function App() {
         );
 
       case "deeds":
-        return <Deeds onAddDeed={handleAddDeed} />;
+        return (
+    <Deeds
+      deeds={deeds}
+      addDeed={addDeed}
+      deleteDeed={deleteDeed}
+      selectedDeeds={selectedDeeds}
+      setSelectedDeeds={setSelectedDeeds}
+      onSubmit={() => {
+        selectedDeeds.forEach((id) => {
+          const deed = deeds.find((d) => d.id === id);
+          if (deed) handleAddDeed(deed);
+        });
+        setSelectedDeeds([]);
+      }}
+      activePage={activePage}
+      setActivePage={setActivePage}
+    />
+  );
 
       case "analytics":
-        return <Analytics analytics={analytics} />;
+        return (
+    <Analytics
+      analytics={analytics}
+      activePage={activePage}
+      setActivePage={setActivePage}
+    />
+  );
 
       case "profile":
-        return <Profile score={score} deeds={deeds} />;
+  return (
+    <Profile
+      score={score}
+      deeds={deeds}
+      activePage={activePage}
+      setActivePage={setActivePage}
+    />
+  );
+
 
       default:
         return null;
@@ -85,7 +132,7 @@ function App() {
 
   return (
     <div className="app-container">
-      <Navbar activePage={activePage} setActivePage={setActivePage} />
+      {/* <Navbar activePage={activePage} setActivePage={setActivePage} /> */}
 
       <main className="main-content">{renderPage()}</main>
 

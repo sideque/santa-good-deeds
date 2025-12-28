@@ -2,8 +2,8 @@ import React from "react";
 import "../style.css";
 
 /**
- * SantaMeter
- * Visual progress indicator based on score.
+ * SantaMeter - Luxury Edition
+ * Visual progress indicator based on score with enhanced animations
  *
  * Props:
  * - score: number
