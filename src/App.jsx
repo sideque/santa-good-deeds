@@ -20,6 +20,7 @@ function App() {
   /* ===== GLOBAL STATE ===== */
   const [deeds, setDeeds] = useState([]);
   const [selectedDeeds, setSelectedDeeds] = useState([]);
+  const [completedDeeds, setCompletedDeeds] = useState([]);
   const [score, setScore] = useState(0);
   const [analytics, setAnalytics] = useState(null);
   const [activePage, setActivePage] = useState("dashboard");
@@ -78,15 +79,35 @@ function App() {
 
   /* ===== SUBMIT SELECTED DEEDS ===== */
   const handleSubmit = () => {
-  // selectedDeeds.forEach((id) => {
-  //   const deed = deeds.find((d) => d.id === id);
-  //   if (deed) {
-  //     setDeeds((prev) => [...prev, deed]); // ❌ duplicate add
-  //   }
-  // });
+  const completedDeeds = deeds.filter(d =>
+    selectedDeeds.includes(d.id)
+  );
+
+  const earnedPoints = completedDeeds.reduce(
+    (sum, d) => sum + d.points,
+    0
+  );
+
+  // update score
+  setScore(prev => prev + earnedPoints);
+
+  // 🔥 CREATE ANALYTICS DATA
+  setAnalytics({
+    weeklyScore: earnedPoints,
+    bestDay: "Today",
+    worstDay: "None",
+    trend: earnedPoints > 0 ? "up" : "stable",
+    dailyBreakdown: [
+      {
+        name: "Today",
+        score: earnedPoints
+      }
+    ]
+  });
 
   setSelectedDeeds([]);
 };
+
 
   const santaMessage = getSantaMessage(score);
 
