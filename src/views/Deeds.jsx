@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "../style.css";
 
 const Deeds = ({
@@ -12,6 +12,10 @@ const Deeds = ({
   editDeed,
   deleteDeed
 }) => {
+  const [showModal, setShowModal] = useState(false);
+  const [modalType, setModalType] = useState(null); // 'add', 'edit', 'delete'
+  const [currentDeed, setCurrentDeed] = useState(null);
+  const [formData, setFormData] = useState({ type: '', emoji: '', points: 5 });
 
   const handleToggle = (deedId) => {
     setSelectedDeeds((prev) =>
@@ -21,20 +25,160 @@ const Deeds = ({
     );
   };
 
-  // Prevent event bubbling for action buttons
+  // Open modals
   const handleEdit = (e, deedId) => {
     e.stopPropagation();
-    editDeed(deedId);
+    const deed = deeds.find(d => d.id === deedId);
+    setCurrentDeed(deed);
+    setFormData({ type: deed.type, emoji: deed.emoji, points: deed.points });
+    setModalType('edit');
+    setShowModal(true);
   };
 
   const handleDelete = (e, deedId) => {
     e.stopPropagation();
-    deleteDeed(deedId);
+    const deed = deeds.find(d => d.id === deedId);
+    setCurrentDeed(deed);
+    setModalType('delete');
+    setShowModal(true);
   };
 
   const handleAdd = (e) => {
     e.stopPropagation();
-    addDeed();
+    setFormData({ type: '', emoji: '✨', points: 5 });
+    setModalType('add');
+    setShowModal(true);
+  };
+
+  // Handle modal actions
+  const handleModalConfirm = () => {
+    if (modalType === 'add') {
+      if (formData.type.trim()) {
+        addDeed(formData);
+        setShowModal(false);
+      }
+    } else if (modalType === 'edit') {
+      if (formData.type.trim()) {
+        editDeed(currentDeed.id, formData);
+        setShowModal(false);
+      }
+    } else if (modalType === 'delete') {
+      deleteDeed(currentDeed.id);
+      setShowModal(false);
+    }
+  };
+
+  const handleModalClose = () => {
+    setShowModal(false);
+    setCurrentDeed(null);
+  };
+
+  // Modal content based on type
+  const renderModalContent = () => {
+    if (modalType === 'delete') {
+      return (
+        <>
+          <div className="modal-icon-container delete-modal">
+            <span className="modal-icon-emoji">🗑️</span>
+          </div>
+          <h2 className="modal-title">Delete Good Deed?</h2>
+          <p className="modal-description">
+            Are you sure you want to delete "<strong>{currentDeed?.type}</strong>"? 
+            This action cannot be undone.
+          </p>
+          <div className="modal-actions">
+            <button className="modal-btn modal-btn-cancel" onClick={handleModalClose}>
+              <span>Cancel</span>
+            </button>
+            <button className="modal-btn modal-btn-delete" onClick={handleModalConfirm}>
+              <span>Delete</span>
+            </button>
+          </div>
+        </>
+      );
+    }
+
+    // Add or Edit form
+    return (
+      <>
+        <div className="modal-icon-container">
+          <span className="modal-icon-emoji">{modalType === 'add' ? '➕' : '✏️'}</span>
+        </div>
+        <h2 className="modal-title">
+          {modalType === 'add' ? 'Add New Good Deed' : 'Edit Good Deed'}
+        </h2>
+        <p className="modal-description">
+          {modalType === 'add' 
+            ? 'Create a new good deed to add to your list of kind actions.'
+            : 'Update the details of your good deed.'}
+        </p>
+        
+        <form className="modal-form" onSubmit={(e) => { e.preventDefault(); handleModalConfirm(); }}>
+          <div className="form-group">
+            <label className="form-label" htmlFor="deed-name">
+              <span className="label-icon">📝</span>
+              Deed Name
+            </label>
+            <input
+              id="deed-name"
+              type="text"
+              className="form-input"
+              placeholder="e.g., Helped someone carry groceries"
+              value={formData.type}
+              onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+              autoFocus
+              required
+            />
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label className="form-label" htmlFor="deed-emoji">
+                <span className="label-icon">😊</span>
+                Emoji
+              </label>
+              <input
+                id="deed-emoji"
+                type="text"
+                className="form-input form-input-emoji"
+                placeholder="✨"
+                value={formData.emoji}
+                onChange={(e) => setFormData({ ...formData, emoji: e.target.value })}
+                maxLength="2"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label" htmlFor="deed-points">
+                <span className="label-icon">⭐</span>
+                Points
+              </label>
+              <input
+                id="deed-points"
+                type="number"
+                className="form-input"
+                min="1"
+                max="100"
+                value={formData.points}
+                onChange={(e) => setFormData({ ...formData, points: parseInt(e.target.value) || 5 })}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="modal-actions">
+            <button type="button" className="modal-btn modal-btn-cancel" onClick={handleModalClose}>
+              <span>Cancel</span>
+            </button>
+            <button type="submit" className="modal-btn modal-btn-confirm">
+              <span>{modalType === 'add' ? 'Add Deed' : 'Save Changes'}</span>
+              <span className="btn-shine"></span>
+            </button>
+          </div>
+        </form>
+      </>
+    );
   };
 
   return (
@@ -189,6 +333,20 @@ const Deeds = ({
           </section>
         </main>
       </div>
+
+      {/* Modal Overlay */}
+      {showModal && (
+        <div className="modal-overlay" onClick={handleModalClose}>
+          <div className="modal-container" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={handleModalClose} aria-label="Close modal">
+              ✕
+            </button>
+            <div className="modal-content">
+              {renderModalContent()}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

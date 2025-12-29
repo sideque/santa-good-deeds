@@ -57,26 +57,25 @@ function App() {
     });
   }, [deeds, score, completedDeeds, analytics, hydrated]);
 
-  /* ===== ADD DEED (TEMPLATE) ===== */
-  const addDeed = () => {
+  /* ===== ADD DEED (WITH FORM DATA) ===== */
+  const addDeed = (formData) => {
     const newDeed = {
       id: crypto.randomUUID(),
-      type: "New Good Deed",
-      emoji: "✨",
-      points: 5,
+      type: formData.type,
+      emoji: formData.emoji,
+      points: formData.points,
     };
 
     setDeeds(prev => [...prev, newDeed]);
   };
 
-  /* ===== EDIT DEED ===== */
-  const editDeed = (id) => {
-    const newName = prompt("Edit deed name");
-    if (!newName) return;
-
+  /* ===== EDIT DEED (WITH FORM DATA) ===== */
+  const editDeed = (id, formData) => {
     setDeeds(prev =>
       prev.map(deed =>
-        deed.id === id ? { ...deed, type: newName } : deed
+        deed.id === id 
+          ? { ...deed, type: formData.type, emoji: formData.emoji, points: formData.points } 
+          : deed
       )
     );
   };
@@ -108,43 +107,42 @@ function App() {
 
     // update analytics (derived, not source of truth)
     setAnalytics(prev => {
-  const prevBreakdown = prev?.dailyBreakdown || [];
+      const prevBreakdown = prev?.dailyBreakdown || [];
 
-  const todayIndex = prevBreakdown.findIndex(
-    d => d.name === "Today"
-  );
+      const todayIndex = prevBreakdown.findIndex(
+        d => d.name === "Today"
+      );
 
-  let newBreakdown;
+      let newBreakdown;
 
-  if (todayIndex !== -1) {
-    // ✅ UPDATE existing Today
-    newBreakdown = prevBreakdown.map((d, i) =>
-      i === todayIndex
-        ? { ...d, score: d.score + earnedPoints }
-        : d
-    );
-  } else {
-    // ✅ First time Today
-    newBreakdown = [
-      ...prevBreakdown,
-      { name: "Today", score: earnedPoints }
-    ];
-  }
+      if (todayIndex !== -1) {
+        // ✅ UPDATE existing Today
+        newBreakdown = prevBreakdown.map((d, i) =>
+          i === todayIndex
+            ? { ...d, score: d.score + earnedPoints }
+            : d
+        );
+      } else {
+        // ✅ First time Today
+        newBreakdown = [
+          ...prevBreakdown,
+          { name: "Today", score: earnedPoints }
+        ];
+      }
 
-  const weeklyScore = newBreakdown.reduce(
-    (sum, d) => sum + d.score,
-    0
-  );
+      const weeklyScore = newBreakdown.reduce(
+        (sum, d) => sum + d.score,
+        0
+      );
 
-  return {
-    weeklyScore,
-    bestDay: "Today",
-    worstDay: "None",
-    trend: earnedPoints > 0 ? "up" : "stable",
-    dailyBreakdown: newBreakdown
-  };
-});
-
+      return {
+        weeklyScore,
+        bestDay: "Today",
+        worstDay: "None",
+        trend: earnedPoints > 0 ? "up" : "stable",
+        dailyBreakdown: newBreakdown
+      };
+    });
 
     setSelectedDeeds([]);
   };
