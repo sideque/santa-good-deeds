@@ -71,11 +71,21 @@ function App() {
 
   /* ===== EDIT DEED (WITH FORM DATA) ===== */
   const editDeed = (id, formData) => {
+    // update master deeds list
     setDeeds(prev =>
       prev.map(deed =>
-        deed.id === id 
-          ? { ...deed, type: formData.type, emoji: formData.emoji, points: formData.points } 
+        deed.id === id
+          ? { ...deed, type: formData.type, emoji: formData.emoji, points: formData.points }
           : deed
+      )
+    );
+
+    // also update historical completedDeeds so Profile stays in sync
+    setCompletedDeeds(prev =>
+      prev.map(cd =>
+        cd.id === id
+          ? { ...cd, type: formData.type, emoji: formData.emoji, points: formData.points }
+          : cd
       )
     );
   };
@@ -192,12 +202,13 @@ function App() {
 
       case "profile":
         return (
-          <Profile
-            score={score}
-            deeds={completedDeeds}
-            activePage={activePage}
-            setActivePage={setActivePage}
-          />
+        <Profile
+        score={score}
+        deeds={deeds}                 // master deeds list
+        completedDeeds={completedDeeds} // completed IDs
+        activePage={activePage}
+        setActivePage={setActivePage}
+        />
         );
 
       default:

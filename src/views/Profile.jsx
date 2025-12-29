@@ -1,13 +1,17 @@
 import React from "react";
 import "../style.css";
 
-const Profile = ({ score, deeds, activePage, setActivePage }) => {
-  const totalDeeds = deeds.length;
+const Profile = ({ score, deeds, completedDeeds, activePage, setActivePage }) => {
+  // Ensure we always operate on an array of deed objects
+  const safeCompleted = completedDeeds || [];
+  const totalDeeds = safeCompleted.length;
 
-  const deedCounts = deeds.reduce((acc, deed) => {
-    acc[deed.type] = (acc[deed.type] || 0) + 1;
+  const deedCounts = safeCompleted.reduce((acc, deed) => {
+    const name = deed?.type || "Unknown";
+    acc[name] = (acc[name] || 0) + 1;
     return acc;
   }, {});
+
 
   const getLevel = (score) => {
     if (score < 20) return "Snowflake ❄️";
