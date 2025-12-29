@@ -7,7 +7,6 @@ import Analytics from "./views/Analytics";
 import Profile from "./views/Profile";
 
 /* ===== CONTROLLERS ===== */
-import { calculateScore } from "./controllers/DeedController";
 import { getSantaMessage } from "./controllers/ProgressController";
 
 /* ===== SERVICES ===== */
@@ -18,32 +17,47 @@ import Snowfall from "react-snowfall";
 
 function App() {
   /* ===== GLOBAL STATE ===== */
-  const [deeds, setDeeds] = useState([]);
-  const [selectedDeeds, setSelectedDeeds] = useState([]);
-  const [completedDeeds, setCompletedDeeds] = useState([]);
-  const [score, setScore] = useState(0);
+  const [deeds, setDeeds] = useState([]);                 // available deeds
+  const [selectedDeeds, setSelectedDeeds] = useState([]); // selected today
+  const [completedDeeds, setCompletedDeeds] = useState([]); // history
+  const [score, setScore] = useState(0);                  // single source of truth
   const [analytics, setAnalytics] = useState(null);
   const [activePage, setActivePage] = useState("dashboard");
+  // Hydration flag prevents saving to localStorage before initial load completes
+  const [hydrated, setHydrated] = useState(false);
 
   /* ===== STREAK STATE ===== */
-  const currentStreak = deeds.length > 0 ? 7 : 0;
+  const currentStreak = completedDeeds.length > 0 ? 7 : 0;
   const bestStreak = 14;
 
-  /* ===== LOAD DATA ===== */
+  /* ===== LOAD DATA (ON REFRESH) ===== */
   useEffect(() => {
     const storedData = loadData();
+
     if (storedData) {
       setDeeds(storedData.deeds || []);
       setScore(storedData.score || 0);
+      setCompletedDeeds(storedData.completedDeeds || []);
+      setAnalytics(storedData.analytics || null);
     }
+
+    // Mark hydration complete so we don't overwrite existing storage
+    setHydrated(true);
   }, []);
 
   /* ===== SAVE DATA ===== */
   useEffect(() => {
-    saveData({ deeds, score });
-  }, [deeds, score]);
+    if (!hydrated) return; // don't save until we've loaded existing data
 
-  /* ===== ADD DEED ===== */
+    saveData({
+      deeds,
+      score,
+      completedDeeds,
+      analytics,
+    });
+  }, [deeds, score, completedDeeds, analytics, hydrated]);
+
+  /* ===== ADD DEED (TEMPLATE) ===== */
   const addDeed = () => {
     const newDeed = {
       id: crypto.randomUUID(),
@@ -52,9 +66,7 @@ function App() {
       points: 5,
     };
 
-    const updated = [...deeds, newDeed];
-    setDeeds(updated);
-    setScore(calculateScore(updated));
+    setDeeds(prev => [...prev, newDeed]);
   };
 
   /* ===== EDIT DEED ===== */
@@ -62,52 +74,63 @@ function App() {
     const newName = prompt("Edit deed name");
     if (!newName) return;
 
-    const updated = deeds.map((deed) =>
-      deed.id === id ? { ...deed, type: newName } : deed
+    setDeeds(prev =>
+      prev.map(deed =>
+        deed.id === id ? { ...deed, type: newName } : deed
+      )
     );
-
-    setDeeds(updated);
-    setScore(calculateScore(updated));
   };
 
   /* ===== DELETE DEED ===== */
   const deleteDeed = (id) => {
-    const updated = deeds.filter((deed) => deed.id !== id);
-    setDeeds(updated);
-    setScore(calculateScore(updated));
+    setDeeds(prev => prev.filter(deed => deed.id !== id));
   };
 
   /* ===== SUBMIT SELECTED DEEDS ===== */
   const handleSubmit = () => {
-  const completedDeeds = deeds.filter(d =>
-    selectedDeeds.includes(d.id)
-  );
+    const completed = deeds.filter(d =>
+      selectedDeeds.includes(d.id)
+    );
 
-  const earnedPoints = completedDeeds.reduce(
-    (sum, d) => sum + d.points,
-    0
-  );
+    if (completed.length === 0) return;
 
-  // update score
-  setScore(prev => prev + earnedPoints);
+    // store completed deeds
+    setCompletedDeeds(prev => [...prev, ...completed]);
 
-  // 🔥 CREATE ANALYTICS DATA
-  setAnalytics({
-    weeklyScore: earnedPoints,
-    bestDay: "Today",
-    worstDay: "None",
-    trend: earnedPoints > 0 ? "up" : "stable",
-    dailyBreakdown: [
-      {
-        name: "Today",
-        score: earnedPoints
-      }
-    ]
-  });
+    // calculate points
+    const earnedPoints = completed.reduce(
+      (sum, d) => sum + d.points,
+      0
+    );
 
-  setSelectedDeeds([]);
-};
+    // update score (ONLY HERE)
+    setScore(prev => prev + earnedPoints);
 
+    // update analytics (derived, not source of truth)
+    setAnalytics(prev => {
+      const prevBreakdown = prev?.dailyBreakdown || [];
+
+      const newBreakdown = [
+        ...prevBreakdown,
+        { name: "Today", score: earnedPoints },
+      ];
+
+      const weeklyScore = newBreakdown.reduce(
+        (sum, d) => sum + d.score,
+        0
+      );
+
+      return {
+        weeklyScore,
+        bestDay: "Today",
+        worstDay: "None",
+        trend: earnedPoints > 0 ? "up" : "stable",
+        dailyBreakdown: newBreakdown,
+      };
+    });
+
+    setSelectedDeeds([]);
+  };
 
   const santaMessage = getSantaMessage(score);
 
@@ -118,7 +141,7 @@ function App() {
         return (
           <Dashboard
             score={score}
-            deeds={deeds} 
+            deeds={completedDeeds}
             currentStreak={currentStreak}
             bestStreak={bestStreak}
             message={santaMessage}
@@ -156,7 +179,7 @@ function App() {
         return (
           <Profile
             score={score}
-            deeds={deeds}
+            deeds={completedDeeds}
             activePage={activePage}
             setActivePage={setActivePage}
           />
@@ -174,8 +197,8 @@ function App() {
       {/* ❄️ Snow Effect */}
       <Snowfall
         color="white"
-        snowflakeCount={200}
-        speed={[3, 2]}
+        snowflakeCount={50}
+        speed={[0, 2]}
         radius={[1, 4]}
         wind={[0, 1]}
         opacity={[0.3, 0.9]}
