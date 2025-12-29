@@ -108,26 +108,43 @@ function App() {
 
     // update analytics (derived, not source of truth)
     setAnalytics(prev => {
-      const prevBreakdown = prev?.dailyBreakdown || [];
+  const prevBreakdown = prev?.dailyBreakdown || [];
 
-      const newBreakdown = [
-        ...prevBreakdown,
-        { name: "Today", score: earnedPoints },
-      ];
+  const todayIndex = prevBreakdown.findIndex(
+    d => d.name === "Today"
+  );
 
-      const weeklyScore = newBreakdown.reduce(
-        (sum, d) => sum + d.score,
-        0
-      );
+  let newBreakdown;
 
-      return {
-        weeklyScore,
-        bestDay: "Today",
-        worstDay: "None",
-        trend: earnedPoints > 0 ? "up" : "stable",
-        dailyBreakdown: newBreakdown,
-      };
-    });
+  if (todayIndex !== -1) {
+    // ✅ UPDATE existing Today
+    newBreakdown = prevBreakdown.map((d, i) =>
+      i === todayIndex
+        ? { ...d, score: d.score + earnedPoints }
+        : d
+    );
+  } else {
+    // ✅ First time Today
+    newBreakdown = [
+      ...prevBreakdown,
+      { name: "Today", score: earnedPoints }
+    ];
+  }
+
+  const weeklyScore = newBreakdown.reduce(
+    (sum, d) => sum + d.score,
+    0
+  );
+
+  return {
+    weeklyScore,
+    bestDay: "Today",
+    worstDay: "None",
+    trend: earnedPoints > 0 ? "up" : "stable",
+    dailyBreakdown: newBreakdown
+  };
+});
+
 
     setSelectedDeeds([]);
   };
