@@ -1,14 +1,12 @@
-// Dashboard.jsx
-// SantaVerse Dashboard - Luxury Christmas Magic Edition
-
 import React from "react";
 import SantaMeter from "../components/SantaMeter";
 import StreakCard from "../components/StreakCard";
+import { getSantaLevel } from "../controllers/ProgressController";
 import "../style.css";
 
 const Dashboard = ({ score, currentStreak, bestStreak, activePage, setActivePage }) => {
   // Derived values
-  const santaLevel = Math.floor(score / 20);
+  const santaLevel = getSantaLevel(score);
   const santaMeterProgress = Math.min((score / 200) * 100, 100);
 
   // Animated background stars
@@ -93,28 +91,17 @@ const Dashboard = ({ score, currentStreak, bestStreak, activePage, setActivePage
 
             <div className="metrics-grid">
               {/* Santa Level Card */}
-              <article className="metric-card santa-level-card" style={{ animationDelay: '0.5s' }}>
+             <article className="profile-summary-card level-summary-card" style={{ animationDelay: '0.5s' }}>
                 <div className="card-glow"></div>
                 <div className="card-content">
-                  <h3 className="card-title">
+                  <h3 className="summary-card-title">
                     <span className="card-icon">🎅</span>
                     Santa Level
                   </h3>
-                  <div className="level-display">
-                    <div className="level-badge">
-                      <div className="badge-inner">
-                        <span className="level-number">{santaLevel}</span>
-                      </div>
-                    </div>
-                    <div className="level-rings">
-                      <div className="ring ring-1"></div>
-                      <div className="ring ring-2"></div>
-                      <div className="ring ring-3"></div>
-                    </div>
+                  <div className="profile-level-display">
+                    <span className="level-number">{santaLevel}</span>
                   </div>
-                  <p className="card-description">
-                    Ho ho ho! You're climbing the nice list ranks.
-                  </p>
+                  <p className="summary-description">Your current rank</p>
                 </div>
               </article>
 

@@ -1,14 +1,3 @@
-/**
- * ProgressController
- * Converts numeric score into meaningful feedback.
- * No UI logic. Pure decision making.
- */
-
-/**
- * Get Santa feedback message based on score
- * @param {number} score
- * @returns {string}
- */
 export const getSantaMessage = (score = 0) => {
   if (score === 0) {
     return "🎅 Start logging your good deeds today!";
@@ -29,11 +18,6 @@ export const getSantaMessage = (score = 0) => {
   return "🎉 Ho Ho Ho! You're a Santa Legend!";
 };
 
-/**
- * Optional helper: derive Santa level
- * @param {number} score
- * @returns {string}
- */
 export const getSantaLevel = (score = 0) => {
   if (score < 20) return "Snowflake ❄️";
   if (score < 50) return "Elf 🧝";

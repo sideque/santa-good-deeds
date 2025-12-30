@@ -400,98 +400,95 @@ body {
 }
 
 /* ==================== SANTA LEVEL CARD ==================== */
-.santa-level-card {
-  background: linear-gradient(135deg, rgba(139, 0, 0, 0.2), var(--glass-bg));
+.profile-summary-card.level-summary-card {
+  background: linear-gradient(135deg, rgba(4, 99, 7, 0.15), var(--glass-bg));
 }
 
-.level-display {
+.profile-summary-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 2.5rem;
   position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 180px;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: scaleIn 0.5s ease-out backwards;
 }
 
-.level-badge {
-  position: relative;
-  z-index: 2;
-}
-
-.badge-inner {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--color-emerald), var(--color-forest));
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.profile-summary-card:hover {
+  transform: translateY(-12px);
+  border-color: rgba(255, 215, 0, 0.4);
   box-shadow: 
-    0 0 40px rgba(4, 99, 7, 0.6),
-    inset 0 4px 8px rgba(0, 0, 0, 0.4),
-    inset 0 -4px 8px rgba(255, 255, 255, 0.1);
-  border: 3px solid var(--color-gold);
-  animation: pulse 2s ease-in-out infinite;
+    0 20px 60px rgba(0, 0, 0, 0.6),
+    0 0 40px rgba(255, 215, 0, 0.2);
 }
 
-@keyframes pulse {
-  0%, 100% { transform: scale(1); box-shadow: 0 0 40px rgba(4, 99, 7, 0.6); }
-  50% { transform: scale(1.05); box-shadow: 0 0 60px rgba(4, 99, 7, 0.8); }
+.profile-summary-card:hover .card-glow {
+  opacity: 1;
+}
+
+.card-glow {
+  position: absolute;
+  inset: -100px;
+  background: radial-gradient(circle at center, rgba(255, 215, 0, 0.1), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.summary-card-title {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--color-champagne);
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.card-icon {
+  font-size: 1.8rem;
+  filter: drop-shadow(0 0 8px currentColor);
+}
+
+.profile-level-display {
+  text-align: center;
+  margin: 2rem 0;
 }
 
 .level-number {
   font-family: var(--font-display);
-  font-size: 3.5rem;
+  font-size: 2.5rem;
   font-weight: 900;
-  color: var(--color-gold);
-  text-shadow: 
-    0 0 20px rgba(255, 215, 0, 0.8),
-    2px 2px 4px rgba(0, 0, 0, 0.8);
+  background: linear-gradient(135deg, var(--color-emerald), #00ff00);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 20px rgba(4, 99, 7, 0.6));
+  display: inline-block;
 }
 
-.level-rings {
-  position: absolute;
-  inset: 0;
+.summary-description {
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-style: italic;
+  color: rgba(247, 231, 206, 0.6);
+  text-align: center;
 }
 
-.ring {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  border: 2px solid rgba(255, 215, 0, 0.3);
-  border-radius: 50%;
-  animation: expandRing 3s ease-out infinite;
-}
-
-.ring-1 {
-  width: 140px;
-  height: 140px;
-  animation-delay: 0s;
-}
-
-.ring-2 {
-  width: 160px;
-  height: 160px;
-  animation-delay: 1s;
-}
-
-.ring-3 {
-  width: 180px;
-  height: 180px;
-  animation-delay: 2s;
-}
-
-@keyframes expandRing {
-  0% {
-    transform: translate(-50%, -50%) scale(0.8);
+/* Animation */
+@keyframes scaleIn {
+  from {
     opacity: 0;
+    transform: scale(0.9);
   }
-  50% {
+  to {
     opacity: 1;
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 0;
+    transform: scale(1);
   }
 }
 

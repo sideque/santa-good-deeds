@@ -8,6 +8,7 @@ import Profile from "./views/Profile";
 
 /* ===== CONTROLLERS ===== */
 import { getSantaMessage } from "./controllers/ProgressController";
+import { getCurrentStreak, getBestStreak } from "./controllers/StreakController";
 
 /* ===== SERVICES ===== */
 import { loadData, saveData } from "./services/storageService";
@@ -27,8 +28,8 @@ function App() {
   const [hydrated, setHydrated] = useState(false);
 
   /* ===== STREAK STATE ===== */
-  const currentStreak = completedDeeds.length > 0 ? 7 : 0;
-  const bestStreak = 14;
+  const currentStreak = getCurrentStreak(completedDeeds);
+  const bestStreak = getBestStreak(completedDeeds);
 
   /* ===== LOAD DATA (ON REFRESH) ===== */
   useEffect(() => {
@@ -96,7 +97,8 @@ function App() {
   };
 
   /* ===== SUBMIT SELECTED DEEDS ===== */
-  const handleSubmit = () => {
+   const handleSubmit = () => {
+    const today = new Date().toISOString().split("T")[0]; 
     const completed = deeds.filter(d =>
       selectedDeeds.includes(d.id)
     );
