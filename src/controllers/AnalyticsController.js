@@ -1,20 +1,6 @@
-// AnalyticsController.js
-// Controller layer in MVC architecture for the SantaVerse analytics feature.
-// Orchestrates data processing: accepts weekly data, delegates scoring to service,
-// computes aggregates (total, best/worst day, trend), and returns structured results.
-// No direct UI manipulation; outputs plain JS object for View consumption.
-// Assumes input is an array of 7 daily objects in chronological order.
-// Each daily object: { date: string (ISO format), deeds: string[] }.
-// Handles edge cases: incomplete weeks, zero scores, ties for best/worst.
 
 import { calculateDailyScore, applyConsistencyBonus } from "../services/scoringService";
 
-/**
- * Controller method to process weekly analytics.
- * @param {Array<{date: string, deeds: string[]}>} weeklyData - Array of 7 daily entries.
- * @returns {Object} Analytics object with total score, best/worst days, and trend.
- * @throws {Error} If input is not exactly 7 days.
- */
 export function computeWeeklyAnalytics(weeklyData) {
   if (!Array.isArray(weeklyData) || weeklyData.length === 0) {
     return {
@@ -82,7 +68,7 @@ export function computeWeeklyAnalytics(weeklyData) {
       score: worstDay.score
     },
     trend,
-    dailyScores // Optional: include for detailed breakdown if needed
+    dailyScores 
   };
 }
 

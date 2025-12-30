@@ -1,8 +1,4 @@
-/**
- * Calculate current streak (consecutive days till today)
- * @param {Array} completedDeeds
- * @returns {number}
- */
+
 export const getCurrentStreak = (completedDeeds = []) => {
   if (!completedDeeds.length) return 0;
 
@@ -35,11 +31,6 @@ export const getCurrentStreak = (completedDeeds = []) => {
   return streak;
 };
 
-/**
- * Calculate best streak (longest consecutive run)
- * @param {Array} completedDeeds
- * @returns {number}
- */
 export const getBestStreak = (completedDeeds = []) => {
   if (!completedDeeds.length) return 0;
 

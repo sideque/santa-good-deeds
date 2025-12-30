@@ -1,16 +1,7 @@
-/**
- * storageService
- * Central place for all storage operations.
- * Currently uses localStorage.
- * Can be replaced with API / DB later without touching UI.
- */
+
 
 const STORAGE_KEY = "santaverse_data";
 
-/**
- * Load saved data from storage
- * @returns {{ deeds: Array, score: number } | null}
- */
 export const loadData = () => {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);

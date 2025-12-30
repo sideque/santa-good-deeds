@@ -1,14 +1,5 @@
 import React from "react";
 import "../style.css";
-
-/**
- * Charts Component
- * Visualizes daily scores using a simple bar chart.
- * No external libraries used.
- *
- * Props:
- * - data: [{ name: string, score: number }]
- */
 const Charts = ({ data = [] }) => {
   if (!data.length) {
     return <p className="chart-empty">No data to visualize yet.</p>;

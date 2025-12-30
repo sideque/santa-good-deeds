@@ -206,8 +206,8 @@ function App() {
         return (
         <Profile
         score={score}
-        deeds={deeds}                 // master deeds list
-        completedDeeds={completedDeeds} // completed IDs
+        deeds={deeds}                 
+        completedDeeds={completedDeeds} 
         activePage={activePage}
         setActivePage={setActivePage}
         />

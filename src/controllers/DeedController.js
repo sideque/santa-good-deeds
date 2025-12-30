@@ -1,9 +1,3 @@
-/**
- * DeedController
- * Responsible for converting deeds into a meaningful score.
- * Business rules live here (NOT in UI).
- */
-
 // weight per deed type
 const DEED_WEIGHTS = {
   help: 3,
@@ -16,11 +10,6 @@ const DEED_WEIGHTS = {
 // optional daily consistency bonus
 const CONSISTENCY_BONUS = 5;
 
-/**
- * Calculate total score from deeds array
- * @param {Array} deeds - [{ type, timestamp }]
- * @returns {number}
- */
 export const calculateScore = (deeds = []) => {
   if (!Array.isArray(deeds) || deeds.length === 0) return 0;
 

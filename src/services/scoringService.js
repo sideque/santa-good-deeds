@@ -1,15 +1,4 @@
-// scoringService.js
-// Service layer for calculating individual daily scores and applying bonuses/penalties.
-// This is part of the Model in MVC architecture, encapsulating the business logic for scoring.
-// Pure JavaScript functions, no dependencies, no UI interactions.
-// Input: Daily deed data as an array of strings (e.g., ['helping', 'studying']).
-// Output: Integer score for the day, considering deed weights and missed day penalty.
 
-/**
- * Calculates the base score for a single day based on the deeds performed.
- * @param {string[]} deeds - Array of deed types performed that day (e.g., ['helping', 'exercise']).
- * @returns {number} Base score from weighted deeds.
- */
 function calculateBaseScore(deeds) {
   let score = 0;
   deeds.forEach(deed => {

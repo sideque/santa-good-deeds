@@ -14,7 +14,6 @@ const PillNav = ({
   pillColor = '#060010',
   hoveredPillTextColor = '#060010',
   pillTextColor,
-  // called when a nav item is selected: onSelect(item.href)
   onSelect,
   onMobileMenuClick,
   initialLoadAnimation = true

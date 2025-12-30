@@ -1,15 +1,6 @@
 import React from "react";
 import "../style.css";
 
-/**
- * StreakCard - Luxury Edition
- * Shows current streak, best streak, and motivational message
- * with enhanced visual design
- *
- * Props:
- * - currentStreak: number
- * - bestStreak: number
- */
 const StreakCard = ({ currentStreak = 0, bestStreak = 0 }) => {
   const getMessage = () => {
     if (currentStreak === 0) return "Start today and build your streak 🎯";

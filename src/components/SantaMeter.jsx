@@ -1,14 +1,6 @@
 import React from "react";
 import "../style.css";
 
-/**
- * SantaMeter - Luxury Edition
- * Visual progress indicator based on score with enhanced animations
- *
- * Props:
- * - score: number
- * - maxScore: number (default 200)
- */
 const SantaMeter = ({ score = 0, maxScore = 200 }) => {
   const percent = Math.min(Math.round((score / maxScore) * 100), 100);
 
